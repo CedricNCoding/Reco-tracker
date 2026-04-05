@@ -3,9 +3,10 @@ import { useState } from 'react';
 import { getTodaySchedule } from '@/constants/program';
 import { getTodayNutrition } from '@/constants/nutrition';
 import { WEEK_SCHEDULE, SESSIONS, SESSION_TYPE_LABELS } from '@/constants/program';
-import { Dumbbell, Droplets, Flame, ChevronRight, ChevronDown, ChevronUp, Pencil, Repeat } from 'lucide-react';
+import { Dumbbell, Droplets, Flame, ChevronRight, ChevronDown, ChevronUp, Pencil, Repeat, GraduationCap } from 'lucide-react';
 import QuickLogModal from './QuickLogModal';
 import { Superset, SessionType, SessionConfig } from '@/lib/types';
+import { SESSION_TIPS } from '@/constants/coachTips';
 
 interface DailyPlanProps {
   onStartSession: () => void;
@@ -99,6 +100,27 @@ export default function DailyPlan({ onStartSession, onStartCardio, activeSession
             })}
           </div>
         )}
+
+        {/* Coach tips for today's session */}
+        {(() => {
+          const sessionType = activeSession?.session_type ?? schedule.session_type as SessionType;
+          const tips = SESSION_TIPS[sessionType];
+          if (!tips || tips.length === 0) return null;
+          return (
+            <div className="space-y-1.5 mb-3">
+              {tips.map((tip, i) => (
+                <div key={i} className={`flex items-start gap-2 text-xs px-3 py-2 rounded-lg ${
+                  tip.type === 'warning' ? 'bg-accent-amber/10 text-accent-amber' :
+                  tip.type === 'technique' ? 'bg-accent-green/10 text-text-secondary' :
+                  'bg-white/5 text-text-secondary'
+                }`}>
+                  <span className="shrink-0">{tip.icon}</span>
+                  <span>{tip.text}</span>
+                </div>
+              ))}
+            </div>
+          );
+        })()}
 
         {/* Exercise list (collapsible) */}
         {hasMuscu && activeSession && (
