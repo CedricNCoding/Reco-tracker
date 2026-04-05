@@ -78,6 +78,12 @@ export const EXERCISE_TIPS: Record<string, ExerciseTip[]> = {
     { text: 'Prehab NON NEGOCIABLE — protege la coiffe des rotateurs, surtout avec du pressing lourd.', type: 'safety' },
     { text: 'Tire vers le visage, coudes hauts, squeeze les omoplates.', type: 'technique' },
   ],
+  'Wrist curl haltere (paume haut)': [
+    { text: 'Avant-bras : bras complets passent aussi par la prehension. Leger et controle.', type: 'technique' },
+  ],
+  'Reverse wrist curl (paume bas)': [
+    { text: 'Poignets fragiles ? Commence tres leger. Alternative : farmer carry lourd 30-40 m.', type: 'safety' },
+  ],
   'Rotations externes': [
     { text: 'Prehab NON NEGOCIABLE — coiffe des rotateurs vulnerable apres 40 ans.', type: 'safety' },
     { text: 'Leger et controle. Coude colle au corps, rotation lente.', type: 'technique' },

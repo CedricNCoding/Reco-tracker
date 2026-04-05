@@ -208,6 +208,14 @@ export const SESSIONS: SessionConfig[] = [
       },
       {
         id: 'ss7',
+        label: 'Avant-bras',
+        exercise_a: { name: 'Wrist curl haltere (paume haut)', reps: '20' },
+        exercise_b: { name: 'Reverse wrist curl (paume bas)', reps: '20' },
+        sets: 2,
+        rest_seconds: 60,
+      },
+      {
+        id: 'ss8',
         label: 'Posture',
         exercise_a: { name: 'Farmer carry leger', reps: '40 m' },
         exercise_b: { name: 'Wall slides', reps: '15' },
