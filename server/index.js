@@ -5,6 +5,7 @@ import { cors } from 'hono/cors';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { execSync } from 'child_process';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, '..', 'data');
@@ -83,6 +84,61 @@ app.get('/api/share', (c) => {
   const filepath = path.join(DATA_DIR, 'shares', `${id}.md`);
   if (!fs.existsSync(filepath)) return c.json({ error: 'Not found' }, 404);
   return c.json({ id, markdown: fs.readFileSync(filepath, 'utf-8') });
+});
+
+// === API: Webhook (GitHub auto-deploy) ===
+const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET || '';
+
+app.post('/api/webhook', async (c) => {
+  // Optional: verify GitHub signature
+  if (WEBHOOK_SECRET) {
+    const signature = c.req.header('x-hub-signature-256') || '';
+    const { createHmac } = await import('crypto');
+    const body = await c.req.text();
+    const expected = 'sha256=' + createHmac('sha256', WEBHOOK_SECRET).update(body).digest('hex');
+    if (signature !== expected) return c.json({ error: 'Invalid signature' }, 403);
+  }
+
+  // Run update in background (don't block the response)
+  const APP_DIR = path.join(__dirname, '..');
+  const logFile = path.join(DATA_DIR, 'deploy.log');
+  ensureDir(DATA_DIR);
+
+  const timestamp = new Date().toISOString();
+  fs.appendFileSync(logFile, `\n=== Deploy triggered ${timestamp} ===\n`);
+
+  try {
+    const commands = [
+      'git pull origin main',
+      'npm install --omit=dev',
+      'NODE_OPTIONS="--max-old-space-size=768" npx vite build',
+    ];
+    for (const cmd of commands) {
+      fs.appendFileSync(logFile, `$ ${cmd}\n`);
+      const output = execSync(cmd, { cwd: APP_DIR, timeout: 120000, encoding: 'utf-8' });
+      fs.appendFileSync(logFile, output + '\n');
+    }
+    fs.appendFileSync(logFile, `=== Deploy success ${new Date().toISOString()} ===\n`);
+
+    // Restart PM2 after response is sent
+    setTimeout(() => {
+      try { execSync('pm2 restart recomp-tracker', { cwd: APP_DIR }); } catch {}
+    }, 1000);
+
+    return c.json({ ok: true, message: 'Deploy started' });
+  } catch (err) {
+    fs.appendFileSync(logFile, `ERROR: ${err}\n`);
+    return c.json({ ok: false, error: String(err) }, 500);
+  }
+});
+
+app.get('/api/deploy-log', (c) => {
+  const logFile = path.join(DATA_DIR, 'deploy.log');
+  if (!fs.existsSync(logFile)) return c.text('No deploys yet');
+  const content = fs.readFileSync(logFile, 'utf-8');
+  // Return last 100 lines
+  const lines = content.split('\n');
+  return c.text(lines.slice(-100).join('\n'));
 });
 
 // === Static files (Vite build output) ===

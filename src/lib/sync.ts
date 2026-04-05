@@ -125,3 +125,74 @@ export function getLastSyncStatus(): { lastSync: string; status: string; error?:
   const raw = localStorage.getItem(SYNC_STATUS_KEY);
   return raw ? JSON.parse(raw) : null;
 }
+
+// Auto-sync: pull from server, merge with local, push back
+export async function autoSync(): Promise<void> {
+  try {
+    // 1. Pull server data and merge into local
+    const res = await fetch('/api/sync');
+    if (!res.ok) return;
+    const serverData: SyncPayload = await res.json();
+
+    // Merge entries: keep most recent version per date (compare fields filled)
+    const localEntries = getLocalEntries();
+    const merged: Record<string, DailyEntry> = { ...localEntries };
+    for (const [id, serverEntry] of Object.entries(serverData.entries)) {
+      const local = merged[id];
+      if (!local) {
+        merged[id] = serverEntry;
+      } else {
+        // Keep whichever has more data
+        const localFilled = countFilledFields(local);
+        const serverFilled = countFilledFields(serverEntry);
+        if (serverFilled > localFilled) {
+          merged[id] = serverEntry;
+        }
+      }
+    }
+    saveLocalEntries(merged);
+
+    // Merge set logs: server wins for same ID
+    const localLogs = getLocalSetLogs();
+    const mergedLogs = { ...localLogs, ...serverData.setLogs };
+    saveLocalSetLogs(mergedLogs);
+
+    // Program: server wins if exists
+    if (serverData.customProgram) {
+      saveLocalProgram(serverData.customProgram);
+    }
+
+    // 2. Push merged data back to server
+    await fetch('/api/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        entries: merged,
+        setLogs: mergedLogs,
+        customProgram: getLocalProgram(),
+        lastSync: new Date().toISOString(),
+      }),
+    });
+
+    localStorage.setItem(SYNC_STATUS_KEY, JSON.stringify({
+      lastSync: new Date().toISOString(),
+      status: 'ok',
+    }));
+  } catch {
+    // Offline — silent fail, localStorage still works
+  }
+}
+
+function countFilledFields(entry: DailyEntry): number {
+  let count = 0;
+  if (entry.weight !== null) count++;
+  if (entry.protein_meals.some(Boolean)) count++;
+  if (entry.session_done) count++;
+  if (entry.sleep_hours !== null) count++;
+  if (entry.energy !== null) count++;
+  if (entry.waist_cm !== null) count++;
+  if (entry.notes) count++;
+  if (entry.water_glasses > 0) count++;
+  if (entry.cardio_distance_m !== null) count++;
+  return count;
+}

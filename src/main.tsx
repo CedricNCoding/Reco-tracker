@@ -9,6 +9,7 @@ import ReviewPage from './app/review/page';
 import SettingsPage from './app/settings/page';
 import HistoryPage from './app/history/page';
 import SharedBilanPage from './app/share/SharedBilanPage';
+import { autoSync } from './lib/sync';
 
 // Service worker
 if ('serviceWorker' in navigator) {
@@ -21,6 +22,12 @@ if (amoled) {
   document.documentElement.style.setProperty('--bg-primary', '#000000');
   document.body.style.background = '#000000';
 }
+
+// Auto-sync on app load + when tab becomes visible again
+autoSync();
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') autoSync();
+});
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
