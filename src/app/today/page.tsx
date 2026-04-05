@@ -155,12 +155,12 @@ export default function TodayPage() {
   const dateLabel = format(new Date(), "EEEE d MMMM", { locale: fr });
 
   return (
-    <div className="max-w-lg mx-auto px-4 pt-4 pb-6 space-y-3">
+    <div className="max-w-lg mx-auto px-5 pt-6 pb-6 space-y-4 stagger-children">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold capitalize">{dateLabel}</h1>
-          <p className="text-xs text-text-secondary">Check-in quotidien</p>
+          <h1 className="text-2xl font-display font-semibold capitalize tracking-tight">{dateLabel}</h1>
+          <p className="text-xs text-text-secondary mt-0.5 tracking-wide">Check-in quotidien</p>
         </div>
       </div>
 

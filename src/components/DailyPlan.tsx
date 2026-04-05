@@ -29,13 +29,13 @@ export default function DailyPlan({ onStartSession, onStartCardio, activeSession
   const isSuggested = activeSession?.session_type === schedule.session_type;
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {/* Session card */}
-      <div className="bg-bg-card rounded-2xl p-4">
-        <div className="flex items-center justify-between mb-2">
+      <div className="card-premium p-5">
+        <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Dumbbell size={18} className="text-accent-green" />
-            <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide">
+            <Dumbbell size={16} className="text-accent-green" />
+            <h3 className="text-xs font-medium text-text-secondary uppercase tracking-widest">
               Seance du jour
             </h3>
           </div>
@@ -165,11 +165,11 @@ export default function DailyPlan({ onStartSession, onStartCardio, activeSession
         {hasMuscu && (
           <button
             onClick={onStartSession}
-            className="w-full flex items-center justify-center gap-2 bg-accent-green text-bg-primary font-bold py-3 px-4 rounded-xl text-base active:scale-95 transition-transform"
+            className="w-full flex items-center justify-center gap-2 bg-accent-green text-bg-primary font-semibold py-3.5 px-4 rounded-xl text-base press-scale btn-premium"
           >
-            <Dumbbell size={20} />
+            <Dumbbell size={18} />
             Lancer la seance
-            <ChevronRight size={18} />
+            <ChevronRight size={16} />
           </button>
         )}
 
@@ -198,10 +198,10 @@ export default function DailyPlan({ onStartSession, onStartCardio, activeSession
       </div>
 
       {/* Nutrition card */}
-      <div className="bg-bg-card rounded-2xl p-4">
+      <div className="card-premium p-5">
         <div className="flex items-center gap-2 mb-3">
-          <Flame size={18} className="text-accent-amber" />
-          <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide">
+          <Flame size={16} className="text-accent-amber" />
+          <h3 className="text-xs font-medium text-text-secondary uppercase tracking-widest">
             Nutrition — {nutrition.label}
           </h3>
         </div>
@@ -226,8 +226,8 @@ export default function DailyPlan({ onStartSession, onStartCardio, activeSession
       </div>
 
       {/* Week overview */}
-      <div className="bg-bg-card rounded-2xl p-4">
-        <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-3">
+      <div className="card-premium p-5">
+        <h3 className="text-xs font-medium text-text-secondary uppercase tracking-widest mb-3">
           Semaine
         </h3>
         <div className="flex gap-1.5">
