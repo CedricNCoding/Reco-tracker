@@ -1,4 +1,3 @@
-'use client';
 
 import { useState, useEffect } from 'react';
 import { Flame, Calendar, Dumbbell } from 'lucide-react';

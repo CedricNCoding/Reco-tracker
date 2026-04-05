@@ -1,4 +1,3 @@
-'use client';
 
 import { SessionType } from '@/lib/types';
 import { SESSION_TYPE_LABELS } from '@/constants/program';

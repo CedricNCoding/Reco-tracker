@@ -23,7 +23,7 @@ echo "[4/5] Clone et build de l'app..."
 REPO_URL="${1:-}"
 if [ -z "$REPO_URL" ]; then
   echo "Usage: ./setup.sh <GIT_REPO_URL>"
-  echo "Ex: ./setup.sh https://github.com/user/recomp-tracker.git"
+  echo "Ex: ./setup.sh https://github.com/CedricNCoding/Reco-tracker.git"
   exit 1
 fi
 
@@ -41,6 +41,9 @@ pm2 startup systemd -u root --hp /root | tail -1 | bash
 echo ""
 echo "=== Installation terminee ==="
 echo "L'app tourne sur http://localhost:3000"
+echo "- Frontend : fichiers statiques (dist/)"
+echo "- API : Hono (server/index.js)"
+echo "- Donnees : data/"
 echo ""
 echo "Prochaine etape : configurer Traefik pour router"
 echo "tracker.mondomaine.fr -> http://<IP_LXC>:3000"

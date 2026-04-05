@@ -1,4 +1,3 @@
-'use client';
 
 import { DailyEntry } from './types';
 import { format } from 'date-fns';

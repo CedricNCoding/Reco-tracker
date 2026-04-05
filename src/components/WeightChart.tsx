@@ -1,4 +1,3 @@
-'use client';
 
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, ReferenceLine } from 'recharts';
 import { DailyEntry } from '@/lib/types';

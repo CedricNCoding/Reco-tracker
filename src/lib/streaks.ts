@@ -1,4 +1,3 @@
-'use client';
 
 import { format, subDays } from 'date-fns';
 import { getEntry } from './storage';

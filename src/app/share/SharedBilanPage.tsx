@@ -1,17 +1,15 @@
-'use client';
-
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams } from 'react-router-dom';
 import { ClipboardList, Copy, CheckCircle } from 'lucide-react';
 
 export default function SharedBilanPage() {
-  const params = useParams();
-  const id = params.id as string;
+  const { id } = useParams<{ id: string }>();
   const [markdown, setMarkdown] = useState<string | null>(null);
   const [error, setError] = useState(false);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
+    if (!id) return;
     fetch(`/api/share?id=${encodeURIComponent(id)}`)
       .then((r) => r.ok ? r.json() : Promise.reject())
       .then((data) => setMarkdown(data.markdown))
@@ -48,18 +46,13 @@ export default function SharedBilanPage() {
         <ClipboardList size={22} className="text-accent-green" />
         Bilan partage
       </h1>
-
       <pre className="bg-bg-card rounded-2xl p-4 text-xs text-text-secondary whitespace-pre-wrap leading-relaxed font-mono max-h-[70vh] overflow-y-auto hide-scrollbar">
         {markdown}
       </pre>
-
-      <button
-        type="button"
-        onClick={handleCopy}
+      <button type="button" onClick={handleCopy}
         className={`w-full flex items-center justify-center gap-2 py-4 rounded-2xl font-bold text-base transition-all active:scale-95 ${
           copied ? 'bg-accent-green/20 text-accent-green' : 'bg-accent-green text-bg-primary'
-        }`}
-      >
+        }`}>
         {copied ? <><CheckCircle size={20} /> Copie !</> : <><Copy size={20} /> Copier le bilan</>}
       </button>
     </div>

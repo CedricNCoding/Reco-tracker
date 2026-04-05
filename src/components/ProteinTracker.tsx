@@ -1,4 +1,3 @@
-'use client';
 
 import { PROTEIN_MEALS } from '@/constants/nutrition';
 import { Check } from 'lucide-react';

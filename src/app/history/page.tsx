@@ -1,4 +1,3 @@
-'use client';
 
 import { useState, useEffect } from 'react';
 import { History, TrendingUp, TrendingDown, Minus, ChevronRight } from 'lucide-react';

@@ -1,4 +1,3 @@
-'use client';
 
 import { Droplets } from 'lucide-react';
 

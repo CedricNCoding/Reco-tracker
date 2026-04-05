@@ -1,4 +1,3 @@
-'use client';
 
 import { SetLog } from './types';
 import { getAllSetLogs } from './setLogStorage';

@@ -1,4 +1,3 @@
-'use client';
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { SessionConfig, SetLog } from '@/lib/types';

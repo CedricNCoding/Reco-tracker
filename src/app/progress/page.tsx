@@ -1,8 +1,7 @@
-'use client';
 
 import { useState, useEffect } from 'react';
 import { TrendingUp, Dumbbell, Moon, Zap, Ruler, History } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 import WeightChart from '@/components/WeightChart';
 import SleepPerfChart from '@/components/SleepPerfChart';
 import StatCard from '@/components/StatCard';
@@ -70,7 +69,7 @@ export default function ProgressPage() {
           Progression
         </h1>
         <Link
-          href="/history"
+          to="/history"
           className="flex items-center gap-1.5 text-xs text-text-secondary bg-white/5 rounded-xl px-3 py-2 active:bg-white/10 transition-colors"
         >
           <History size={14} />

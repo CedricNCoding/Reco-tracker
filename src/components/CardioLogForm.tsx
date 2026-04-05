@@ -1,4 +1,3 @@
-'use client';
 
 import { useState } from 'react';
 import { Heart, Route, Clock, CheckCircle, X } from 'lucide-react';

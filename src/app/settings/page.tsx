@@ -1,4 +1,3 @@
-'use client';
 
 import { useState, useEffect } from 'react';
 import { Settings, RefreshCw, CheckCircle, AlertTriangle, Trash2, Database, Download, Upload, Moon, Palette } from 'lucide-react';

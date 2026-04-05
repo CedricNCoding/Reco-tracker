@@ -1,4 +1,3 @@
-'use client';
 
 import { useState, useEffect } from 'react';
 import { Bell, X, Ruler, Cookie } from 'lucide-react';

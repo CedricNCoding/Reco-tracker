@@ -1,4 +1,3 @@
-'use client';
 
 import { SetLog, SessionType } from './types';
 import { getTodayId } from './storage';

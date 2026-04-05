@@ -1,4 +1,3 @@
-'use client';
 
 import { SyncPayload, DailyEntry, SetLog, ProgramUpdate } from './types';
 

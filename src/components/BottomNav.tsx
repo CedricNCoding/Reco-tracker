@@ -1,7 +1,4 @@
-'use client';
-
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { Link, useLocation } from 'react-router-dom';
 import { CalendarCheck, TrendingUp, ClipboardList, Settings } from 'lucide-react';
 
 const tabs = [
@@ -12,7 +9,7 @@ const tabs = [
 ];
 
 export default function BottomNav() {
-  const pathname = usePathname();
+  const { pathname } = useLocation();
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-bg-card border-t border-white/10 safe-area-bottom">
@@ -23,7 +20,7 @@ export default function BottomNav() {
           return (
             <Link
               key={tab.href}
-              href={tab.href}
+              to={tab.href}
               className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
                 isActive
                   ? 'text-accent-green'

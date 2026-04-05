@@ -1,4 +1,3 @@
-'use client';
 
 import { Thermometer, ChevronRight } from 'lucide-react';
 

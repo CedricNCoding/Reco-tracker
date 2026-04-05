@@ -1,4 +1,3 @@
-'use client';
 
 import { useState } from 'react';
 import { Trash2, Dumbbell, Clock, ChevronDown, ChevronUp } from 'lucide-react';

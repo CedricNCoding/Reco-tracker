@@ -1,4 +1,3 @@
-'use client';
 
 import { DailyEntry, SetLog } from './types';
 

@@ -1,4 +1,3 @@
-'use client';
 
 import { DailyEntry, SetLog, SessionType } from './types';
 import { createEmptyEntry, saveEntry, getEntry } from './storage';

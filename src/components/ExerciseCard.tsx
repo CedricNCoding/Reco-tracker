@@ -1,4 +1,3 @@
-'use client';
 
 import { Superset } from '@/lib/types';
 

@@ -1,4 +1,3 @@
-'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { beepWarning, beepComplete, beepCountdown } from '@/lib/beep';

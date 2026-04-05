@@ -1,4 +1,3 @@
-'use client';
 
 import { useState, useEffect, useMemo } from 'react';
 import { ClipboardList, ChevronLeft, ChevronRight, AlertTriangle, CheckCircle2, TrendingUp, TrendingDown, Minus, Link2 } from 'lucide-react';

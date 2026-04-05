@@ -1,4 +1,3 @@
-'use client';
 
 let wakeLockSentinel: WakeLockSentinel | null = null;
 

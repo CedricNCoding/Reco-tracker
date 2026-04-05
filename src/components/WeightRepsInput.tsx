@@ -1,4 +1,3 @@
-'use client';
 
 import { useState, useEffect, useMemo } from 'react';
 import { Dumbbell, RotateCcw, TrendingUp, ChevronDown } from 'lucide-react';

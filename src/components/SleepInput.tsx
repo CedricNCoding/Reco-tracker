@@ -1,4 +1,3 @@
-'use client';
 
 import { Moon } from 'lucide-react';
 
