@@ -50,7 +50,6 @@ export default function WeightRepsInput({ exerciseName, targetReps, lastWeight, 
     }
 
     return Array.from(items)
-      .filter((w) => w > 0)
       .sort((a, b) => a - b);
   }, [exerciseName, lastWeight]);
 
@@ -87,7 +86,7 @@ export default function WeightRepsInput({ exerciseName, targetReps, lastWeight, 
 
         {hasHistory && (
           <div className="flex gap-1.5 mb-2 justify-center flex-wrap">
-            {[lastWeight - 2.5, lastWeight, lastWeight + 2.5].filter((w) => w > 0).map((w) => (
+            {[lastWeight - 2.5, lastWeight, lastWeight + 2.5].map((w) => (
               <button
                 key={w}
                 type="button"
@@ -107,14 +106,27 @@ export default function WeightRepsInput({ exerciseName, targetReps, lastWeight, 
           </div>
         )}
 
-        <button
-          type="button"
-          onClick={() => setShowPicker(!showPicker)}
-          className="w-full flex items-center justify-between bg-white/5 rounded-xl px-4 py-3 active:bg-white/10 transition-colors"
-        >
-          <span className="text-2xl font-bold">{weight !== null ? `${weight} kg` : '— kg'}</span>
-          <ChevronDown size={18} className={`text-text-secondary transition-transform ${showPicker ? 'rotate-180' : ''}`} />
-        </button>
+        <div className="flex gap-2 items-center">
+          <div className="flex-1 flex items-center bg-white/5 rounded-xl px-4 py-3">
+            <input
+              type="number"
+              inputMode="decimal"
+              step="0.5"
+              value={weight ?? ''}
+              onChange={(e) => setWeight(e.target.value === '' ? null : parseFloat(e.target.value))}
+              placeholder="0"
+              className="w-full bg-transparent text-2xl font-bold outline-none text-text-primary placeholder:text-text-secondary [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            />
+            <span className="text-lg text-text-secondary ml-1">kg</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowPicker(!showPicker)}
+            className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center active:bg-white/10 transition-colors shrink-0"
+          >
+            <ChevronDown size={18} className={`text-text-secondary transition-transform ${showPicker ? 'rotate-180' : ''}`} />
+          </button>
+        </div>
 
         {showPicker && (
           <div className="mt-1.5 bg-white/5 rounded-xl max-h-48 overflow-y-auto hide-scrollbar">
@@ -136,7 +148,7 @@ export default function WeightRepsInput({ exerciseName, targetReps, lastWeight, 
                 </button>
               ))
             ) : (
-              [10, 12.5, 15, 17.5, 20, 22.5, 25, 27.5, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80].map((w) => (
+              [-20, -15, -10, -5, 0, 2.5, 5, 7.5, 10, 12.5, 15, 17.5, 20, 22.5, 25, 27.5, 30, 32.5, 35, 37.5, 40, 45, 50, 55, 60, 65, 70, 75, 80, 90, 100].map((w) => (
                 <button
                   key={w}
                   type="button"
@@ -145,21 +157,10 @@ export default function WeightRepsInput({ exerciseName, targetReps, lastWeight, 
                     weight === w ? 'bg-accent-green/20 text-accent-green font-bold' : 'text-text-primary hover:bg-white/5'
                   }`}
                 >
-                  {w} kg
+                  {w} kg{w < 0 ? ' (aide)' : w === 0 ? ' (poids du corps)' : ''}
                 </button>
               ))
             )}
-            <div className="px-4 py-2.5 border-t border-white/5">
-              <input
-                type="number"
-                inputMode="decimal"
-                step="0.5"
-                value={weight ?? ''}
-                onChange={(e) => setWeight(e.target.value === '' ? null : parseFloat(e.target.value))}
-                placeholder="Autre charge..."
-                className="w-full bg-transparent text-sm outline-none text-text-primary placeholder:text-text-secondary [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-              />
-            </div>
           </div>
         )}
       </div>

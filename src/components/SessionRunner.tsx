@@ -15,7 +15,7 @@ import ExerciseCard from './ExerciseCard';
 import RestTimer from './RestTimer';
 import WeightRepsInput from './WeightRepsInput';
 import WarmUpSets from './WarmUpSets';
-import { X, Trophy, SkipForward } from 'lucide-react';
+import { X, Trophy, SkipForward, ChevronLeft, CornerDownLeft } from 'lucide-react';
 
 interface SessionRunnerProps {
   session: SessionConfig;
@@ -42,6 +42,8 @@ export default function SessionRunner({ session, onComplete, onExit }: SessionRu
   const [initialized, setInitialized] = useState(false);
   const [state, setState] = useState<RunnerState>(makeInitialState(session));
   const [restoredRestRemaining, setRestoredRestRemaining] = useState<number | null>(null);
+  // When editing a past set, stores the position to return to after confirmation
+  const [editingFrom, setEditingFrom] = useState<RunnerState | null>(null);
   const startedAtRef = useRef<number>(Date.now());
   const setLogsRef = useRef<SetLog[]>([]);
 
@@ -49,6 +51,11 @@ export default function SessionRunner({ session, onComplete, onExit }: SessionRu
   const currentExercise = state.exercise === 'a' ? superset?.exercise_a : superset?.exercise_b;
   const todayId = getTodayId();
   const lastPerf = currentExercise ? getLastWeightForExercise(currentExercise.name) : null;
+
+  // Find existing log for current position (for editing)
+  const existingLog = superset ? setLogsRef.current.find(
+    (log) => log.superset_id === superset.id && log.exercise === state.exercise && log.set_number === state.set
+  ) : undefined;
 
   // Restore persisted session on mount
   useEffect(() => {
@@ -108,8 +115,9 @@ export default function SessionRunner({ session, onComplete, onExit }: SessionRu
 
   const handleSetDone = useCallback((weight: number | null, reps: number | null) => {
     if (superset && currentExercise) {
+      const logId = makeSetLogId(todayId, session.session_type, superset.id, state.exercise, state.set);
       const log: SetLog = {
-        id: makeSetLogId(todayId, session.session_type, superset.id, state.exercise, state.set),
+        id: logId,
         date: todayId,
         session_type: session.session_type,
         superset_id: superset.id,
@@ -119,7 +127,22 @@ export default function SessionRunner({ session, onComplete, onExit }: SessionRu
         weight_kg: weight,
         reps_done: reps,
       };
-      setLogsRef.current = [...setLogsRef.current, log];
+      // Update existing log or append new one
+      const existingIdx = setLogsRef.current.findIndex((l) => l.id === logId);
+      if (existingIdx >= 0) {
+        const updated = [...setLogsRef.current];
+        updated[existingIdx] = log;
+        setLogsRef.current = updated;
+      } else {
+        setLogsRef.current = [...setLogsRef.current, log];
+      }
+    }
+
+    // If editing a past set, return to where we were
+    if (editingFrom) {
+      setState(editingFrom);
+      setEditingFrom(null);
+      return;
     }
 
     const ss = superset;
@@ -131,7 +154,6 @@ export default function SessionRunner({ session, onComplete, onExit }: SessionRu
     }
 
     if (state.set < ss.sets) {
-      // Start rest — record when it began
       setState((s) => ({
         ...s,
         resting: true,
@@ -142,7 +164,7 @@ export default function SessionRunner({ session, onComplete, onExit }: SessionRu
     }
 
     moveToNextSuperset();
-  }, [superset, currentExercise, state, todayId, session.session_type]);
+  }, [superset, currentExercise, state, todayId, session.session_type, editingFrom]);
 
   function handleRestComplete() {
     setRestoredRestRemaining(null);
@@ -178,6 +200,66 @@ export default function SessionRunner({ session, onComplete, onExit }: SessionRu
 
   function handleSkipSuperset() {
     moveToNextSuperset();
+  }
+
+  function getPreviousPosition(): RunnerState | null {
+    const ss = session.supersets[state.supersetIdx];
+    const hasB = ss?.exercise_b !== null;
+
+    // Currently on exercise B → go back to A (same set)
+    if (state.exercise === 'b') {
+      return { ...state, exercise: 'a', resting: false, restStartedAt: null, restDuration: null };
+    }
+
+    // Exercise A, set > 1 → go to last exercise of previous set
+    if (state.set > 1) {
+      return {
+        ...state,
+        exercise: hasB ? 'b' : 'a',
+        set: state.set - 1,
+        resting: false,
+        restStartedAt: null,
+        restDuration: null,
+      };
+    }
+
+    // Set 1, exercise A → go to last set of previous superset
+    if (state.supersetIdx > 0) {
+      const prevIdx = state.supersetIdx - 1;
+      const prevSS = session.supersets[prevIdx];
+      const prevHasB = prevSS.exercise_b !== null;
+      return {
+        supersetIdx: prevIdx,
+        exercise: prevHasB ? 'b' : 'a',
+        set: prevSS.sets,
+        resting: false,
+        restStartedAt: null,
+        restDuration: null,
+        complete: false,
+        warmingUp: false,
+      };
+    }
+
+    return null;
+  }
+
+  function handleGoBack() {
+    // Save the current position to return to (only on first back press)
+    if (!editingFrom) {
+      setEditingFrom({ ...state });
+    }
+
+    const prev = getPreviousPosition();
+    if (prev) {
+      setState(prev);
+    }
+  }
+
+  function handleCancelEdit() {
+    if (editingFrom) {
+      setState(editingFrom);
+      setEditingFrom(null);
+    }
   }
 
   function handleFinish() {
@@ -226,12 +308,21 @@ export default function SessionRunner({ session, onComplete, onExit }: SessionRu
   if (state.resting) {
     const duration = restoredRestRemaining ?? superset.rest_seconds;
     return (
-      <RestTimer
-        duration={duration}
-        onComplete={handleRestComplete}
-        onSkip={handleRestComplete}
-        label={`${superset.id.toUpperCase()} — ${superset.label}`}
-      />
+      <div className="relative">
+        <RestTimer
+          duration={duration}
+          onComplete={handleRestComplete}
+          onSkip={handleRestComplete}
+          label={`${superset.id.toUpperCase()} — ${superset.label}`}
+        />
+        {setLogsRef.current.length > 0 && (
+          <button type="button" onClick={handleGoBack}
+            className="fixed top-4 left-4 z-[60] w-10 h-10 rounded-full bg-white/10 flex items-center justify-center active:scale-90 transition-transform"
+            title="Corriger une serie">
+            <ChevronLeft size={18} />
+          </button>
+        )}
+      </div>
     );
   }
 
@@ -269,21 +360,50 @@ export default function SessionRunner({ session, onComplete, onExit }: SessionRu
   // Exercise screen
   const totalSupersets = session.supersets.length;
   const progressPct = ((state.supersetIdx) / totalSupersets) * 100;
+  const canGoBack = state.supersetIdx > 0 || state.set > 1 || state.exercise === 'b';
+  const isEditing = editingFrom !== null;
+
+  // When editing, pre-fill with logged values; otherwise use history
+  const prefillWeight = existingLog?.weight_kg ?? lastPerf?.weight ?? null;
+  const prefillReps = existingLog?.reps_done ?? lastPerf?.reps ?? null;
 
   return (
     <div className="fixed inset-0 z-50 bg-bg-primary flex flex-col">
       <div className="flex items-center justify-between px-4 pt-4 pb-2">
-        <button type="button" onClick={handleExit}
-          className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center active:scale-90 transition-transform">
-          <X size={20} />
-        </button>
+        <div className="flex items-center gap-2">
+          <button type="button" onClick={handleExit}
+            className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center active:scale-90 transition-transform">
+            <X size={20} />
+          </button>
+          {canGoBack && (
+            <button type="button" onClick={handleGoBack}
+              className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center active:scale-90 transition-transform"
+              title="Serie precedente">
+              <ChevronLeft size={18} />
+            </button>
+          )}
+        </div>
         <p className="text-xs text-text-secondary font-medium">{session.title}</p>
-        <button type="button" onClick={handleSkipSuperset}
-          className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center active:scale-90 transition-transform"
-          title="Passer ce superset">
-          <SkipForward size={18} />
-        </button>
+        {isEditing ? (
+          <button type="button" onClick={handleCancelEdit}
+            className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center active:scale-90 transition-transform"
+            title="Revenir a la position courante">
+            <CornerDownLeft size={18} />
+          </button>
+        ) : (
+          <button type="button" onClick={handleSkipSuperset}
+            className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center active:scale-90 transition-transform"
+            title="Passer ce superset">
+            <SkipForward size={18} />
+          </button>
+        )}
       </div>
+
+      {isEditing && (
+        <div className="mx-4 mb-1 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-center">
+          <p className="text-xs text-amber-400 font-medium">Correction — confirme pour revenir</p>
+        </div>
+      )}
 
       <div className="px-4 mb-2">
         <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
@@ -298,10 +418,11 @@ export default function SessionRunner({ session, onComplete, onExit }: SessionRu
       <div className="flex-1 flex flex-col justify-center px-4 space-y-3 overflow-y-auto">
         <ExerciseCard superset={superset} currentExercise={state.exercise} currentSet={state.set} />
         <WeightRepsInput
+          key={`${superset.id}-${state.exercise}-${state.set}`}
           exerciseName={currentExercise?.name ?? ''}
           targetReps={currentExercise?.reps ?? ''}
-          lastWeight={lastPerf?.weight ?? null}
-          lastReps={lastPerf?.reps ?? null}
+          lastWeight={prefillWeight}
+          lastReps={prefillReps}
           onConfirm={handleSetDone}
         />
       </div>

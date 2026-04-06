@@ -10,11 +10,16 @@ interface RestTimerProps {
 }
 
 export default function RestTimer({ duration, onComplete, onSkip, label }: RestTimerProps) {
+  const endTimeRef = useRef(Date.now() + duration * 1000);
   const [remaining, setRemaining] = useState(duration);
   const [totalDuration, setTotalDuration] = useState(duration);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const completedRef = useRef(false);
   const beeped = useRef<Set<number>>(new Set());
+
+  const calcRemaining = useCallback(() => {
+    return Math.max(0, Math.ceil((endTimeRef.current - Date.now()) / 1000));
+  }, []);
 
   const handleComplete = useCallback(() => {
     if (completedRef.current) return;
@@ -30,20 +35,29 @@ export default function RestTimer({ duration, onComplete, onSkip, label }: RestT
   useEffect(() => {
     completedRef.current = false;
     beeped.current = new Set();
+    endTimeRef.current = Date.now() + duration * 1000;
     setRemaining(duration);
     setTotalDuration(duration);
 
     intervalRef.current = setInterval(() => {
-      setRemaining((prev) => {
-        if (prev <= 1) return 0;
-        return prev - 1;
-      });
-    }, 1000);
+      setRemaining(calcRemaining());
+    }, 250);
 
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [duration]);
+  }, [duration, calcRemaining]);
+
+  // Recalculate when app comes back from background
+  useEffect(() => {
+    function handleVisibility() {
+      if (document.visibilityState === 'visible') {
+        setRemaining(calcRemaining());
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
+  }, [calcRemaining]);
 
   useEffect(() => {
     if (remaining === 10 && !beeped.current.has(10)) { beeped.current.add(10); beepWarning(); }
@@ -54,8 +68,9 @@ export default function RestTimer({ duration, onComplete, onSkip, label }: RestT
   }, [remaining, handleComplete]);
 
   function addTime() {
-    setRemaining((prev) => prev + 30);
+    endTimeRef.current += 30 * 1000;
     setTotalDuration((prev) => prev + 30);
+    setRemaining(calcRemaining());
   }
 
   const pct = Math.max(0, Math.min(1, remaining / totalDuration));
