@@ -1,4 +1,4 @@
-import { DailyEntry, WeeklySummary, DayOfWeek } from './types';
+import { DailyEntry, WeeklySummary, DayOfWeek, SetLog } from './types';
 import { WEEK_SCHEDULE, SESSION_TYPE_LABELS } from '@/constants/program';
 import { format, parseISO, addDays } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -8,6 +8,7 @@ import {
   calculateAvgEnergy,
   calculateProteinAdherence,
 } from './calculations';
+import { getSetLogsForDateRange } from './setLogStorage';
 
 const DIAGNOSIS_LABELS: Record<WeeklySummary['diagnosis'], string> = {
   recomp_ok: '✅ Recomp en cours',
@@ -103,6 +104,17 @@ export function generateBilanMarkdown(data: BilanData): string {
     e.session_done && e.session_type && !['natation', 'run', 'repos'].includes(e.session_type)
   ).length;
 
+  // --- Set logs for the week (musculation results) ---
+  const weekStartStr = format(weekStart, 'yyyy-MM-dd');
+  const weekEndStr = format(weekEnd, 'yyyy-MM-dd');
+  const setLogs = getSetLogsForDateRange(weekStartStr, weekEndStr);
+
+  // Group set logs by session date + type, then by exercise
+  const muscuResults = formatMuscuResults(setLogs, entries);
+
+  // --- Cardio results (run + natation) ---
+  const cardioResults = formatCardioResults(entries);
+
   return `## Bilan Semaine du ${startStr} au ${endStr}
 
 ### Poids
@@ -114,6 +126,12 @@ export function generateBilanMarkdown(data: BilanData): string {
 - Realisees : ${muscu}/5 muscu | Natation : ${natation} | Run : ${run}
 - Detail : ${sessionDetails}
 ${entries.filter((e) => e.session_duration_min).map((e) => `- ${format(parseISO(e.id), 'EEEE', { locale: fr })} : ${e.session_duration_min} min`).join('\n')}
+
+### Resultats musculation
+${muscuResults || '- Aucune donnee de charges cette semaine'}
+
+### Resultats cardio
+${cardioResults || '- Aucune donnee cardio cette semaine'}
 
 ### Nutrition
 - Proteines 4/4 : ${summary.protein_adherence} jours sur 7
@@ -135,4 +153,100 @@ ${prevWaist ? `- Precedente : ${prevWaist.waist_cm} cm (${prevWaist.id})` : ''}
 ### Questions / ressentis
 ${allNotes || '- Aucune note cette semaine'}
 `;
+}
+
+function formatMuscuResults(setLogs: SetLog[], entries: DailyEntry[]): string {
+  if (setLogs.length === 0) return '';
+
+  // Group by date + session_type
+  const bySession = new Map<string, SetLog[]>();
+  for (const log of setLogs) {
+    const key = `${log.date}_${log.session_type}`;
+    if (!bySession.has(key)) bySession.set(key, []);
+    bySession.get(key)!.push(log);
+  }
+
+  const lines: string[] = [];
+
+  for (const [key, logs] of bySession) {
+    const date = logs[0].date;
+    const sessionType = logs[0].session_type;
+    const label = SESSION_TYPE_LABELS[sessionType] || sessionType;
+    const dayName = format(parseISO(date), 'EEEE', { locale: fr });
+    lines.push(`**${dayName} — ${label}**`);
+
+    // Group by exercise name, preserving order
+    const byExercise = new Map<string, SetLog[]>();
+    for (const log of logs.sort((a, b) => a.id.localeCompare(b.id))) {
+      if (!byExercise.has(log.exercise_name)) byExercise.set(log.exercise_name, []);
+      byExercise.get(log.exercise_name)!.push(log);
+    }
+
+    for (const [exName, exLogs] of byExercise) {
+      const sets = exLogs
+        .sort((a, b) => a.set_number - b.set_number)
+        .map((l) => {
+          const w = l.weight_kg !== null ? `${l.weight_kg}kg` : 'PDC';
+          const r = l.reps_done !== null ? `×${l.reps_done}` : '';
+          return `${w}${r}`;
+        })
+        .join(', ');
+      // Best set (heaviest weight)
+      const best = exLogs.reduce((b, l) => (l.weight_kg ?? -Infinity) > (b.weight_kg ?? -Infinity) ? l : b);
+      const bestStr = best.weight_kg !== null ? ` (best: ${best.weight_kg}kg×${best.reps_done ?? '?'})` : '';
+      lines.push(`- ${exName} : ${sets}${bestStr}`);
+    }
+    lines.push('');
+  }
+
+  return lines.join('\n');
+}
+
+function formatCardioResults(entries: DailyEntry[]): string {
+  const cardioEntries = entries.filter(
+    (e) => e.session_done && (e.session_type === 'run' || e.session_type === 'natation')
+  );
+
+  if (cardioEntries.length === 0) return '';
+
+  const lines: string[] = [];
+
+  for (const entry of cardioEntries) {
+    const dayName = format(parseISO(entry.id), 'EEEE', { locale: fr });
+    const label = entry.session_type === 'run' ? 'Course' : 'Natation';
+    const parts: string[] = [`**${dayName} — ${label}**`];
+
+    const details: string[] = [];
+    if (entry.cardio_distance_m !== null) {
+      const km = (entry.cardio_distance_m / 1000).toFixed(2);
+      details.push(`Distance : ${km} km`);
+    }
+    if (entry.cardio_duration_min !== null) {
+      details.push(`Duree : ${entry.cardio_duration_min} min`);
+    }
+    if (entry.cardio_distance_m !== null && entry.cardio_duration_min !== null && entry.cardio_duration_min > 0) {
+      const paceSecPerKm = (entry.cardio_duration_min * 60) / (entry.cardio_distance_m / 1000);
+      const paceMin = Math.floor(paceSecPerKm / 60);
+      const paceSec = Math.round(paceSecPerKm % 60);
+      details.push(`Allure : ${paceMin}'${paceSec.toString().padStart(2, '0')}"/km`);
+    }
+    if (entry.cardio_avg_hr !== null) {
+      details.push(`FC moy : ${entry.cardio_avg_hr} bpm`);
+    }
+    if (entry.session_duration_min !== null) {
+      details.push(`Duree totale seance : ${entry.session_duration_min} min`);
+    }
+
+    if (details.length > 0) {
+      lines.push(parts[0]);
+      for (const d of details) {
+        lines.push(`- ${d}`);
+      }
+    } else {
+      lines.push(`${parts[0]} — Seance completee (pas de details)`);
+    }
+    lines.push('');
+  }
+
+  return lines.join('\n');
 }

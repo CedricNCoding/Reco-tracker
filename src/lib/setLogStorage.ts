@@ -89,6 +89,11 @@ export function getAllSetLogs(): Record<string, SetLog> {
   return getLogs();
 }
 
+export function getSetLogsForDateRange(startDate: string, endDate: string): SetLog[] {
+  const logs = getLogs();
+  return Object.values(logs).filter((l) => l.date >= startDate && l.date <= endDate);
+}
+
 // Returns recent weights used for this exercise, sorted descending by date, unique values
 export function getRecentWeightsForExercise(exerciseName: string): number[] {
   const logs = getLogs();
