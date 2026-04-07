@@ -7,6 +7,7 @@ import TodayPage from './app/today/page';
 import ProgressPage from './app/progress/page';
 import ReviewPage from './app/review/page';
 import SettingsPage from './app/settings/page';
+import ProgramEditorPage from './app/program/page';
 import HistoryPage from './app/history/page';
 import SharedBilanPage from './app/share/SharedBilanPage';
 import { autoSync } from './lib/sync';
@@ -39,6 +40,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="progress" element={<ProgressPage />} />
           <Route path="review" element={<ReviewPage />} />
           <Route path="settings" element={<SettingsPage />} />
+          <Route path="program" element={<ProgramEditorPage />} />
           <Route path="history" element={<HistoryPage />} />
         </Route>
         <Route path="share/:id" element={<SharedBilanPage />} />

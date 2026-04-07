@@ -1,9 +1,10 @@
 import { Link, useLocation } from 'react-router-dom';
-import { CalendarCheck, TrendingUp, ClipboardList, Settings } from 'lucide-react';
+import { CalendarCheck, TrendingUp, ClipboardList, Dumbbell, Settings } from 'lucide-react';
 
 const tabs = [
   { href: '/today', label: "Aujourd'hui", icon: CalendarCheck },
-  { href: '/progress', label: 'Progression', icon: TrendingUp },
+  { href: '/progress', label: 'Progres', icon: TrendingUp },
+  { href: '/program', label: 'Programme', icon: Dumbbell },
   { href: '/review', label: 'Bilan', icon: ClipboardList },
   { href: '/settings', label: 'Reglages', icon: Settings },
 ];

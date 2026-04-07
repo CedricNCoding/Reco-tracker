@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { getTodaySchedule } from '@/constants/program';
 import { getTodayNutrition } from '@/constants/nutrition';
-import { WEEK_SCHEDULE, SESSIONS, SESSION_TYPE_LABELS } from '@/constants/program';
+import { WEEK_SCHEDULE, SESSION_TYPE_LABELS, getSessionByType } from '@/constants/program';
 import { Dumbbell, Droplets, Flame, ChevronRight, ChevronDown, ChevronUp, Pencil, Repeat, GraduationCap } from 'lucide-react';
 import QuickLogModal from './QuickLogModal';
 import { Superset, SessionType, SessionConfig } from '@/lib/types';
@@ -71,7 +71,7 @@ export default function DailyPlan({ onStartSession, onStartCardio, activeSession
         {showPicker && (
           <div className="grid grid-cols-2 gap-1.5 mb-3">
             {MUSCU_TYPES.map((type) => {
-              const session = SESSIONS.find((s) => s.session_type === type);
+              const session = getSessionByType(type);
               if (!session) return null;
               const isActive = activeSession?.session_type === type;
               const isSugg = type === schedule.session_type;
