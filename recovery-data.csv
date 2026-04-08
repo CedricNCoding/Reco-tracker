@@ -1,0 +1,112 @@
+date,session_type,superset_id,exercise_ab,exercise_name,weight,reps,set_number
+2026-04-06,haut_a,ss1,a,Developpe couche barre,70,7,1
+2026-04-06,haut_a,ss1,a,Developpe couche barre,70,9,2
+2026-04-06,haut_a,ss1,a,Developpe couche barre,80,4,3
+2026-04-06,haut_a,ss1,a,Developpe couche barre,80,5,4
+2026-04-06,haut_a,ss1,b,Pompes lestees,PDC,15,1
+2026-04-06,haut_a,ss1,b,Pompes lestees,PDC,15,2
+2026-04-06,haut_a,ss1,b,Pompes lestees,PDC,12,3
+2026-04-06,haut_a,ss1,b,Pompes lestees,PDC,12,4
+2026-04-06,haut_a,ss2,a,Developpe incline halteres,30,10,1
+2026-04-06,haut_a,ss2,a,Developpe incline halteres,30,11,2
+2026-04-06,haut_a,ss2,a,Developpe incline halteres,30,9,3
+2026-04-06,haut_a,ss2,b,Ecarte poulie (bas → haut),12.5,20,1
+2026-04-06,haut_a,ss2,b,Ecarte poulie (bas → haut),12.5,20,2
+2026-04-06,haut_a,ss2,b,Ecarte poulie (bas → haut),15,19,3
+2026-04-06,haut_a,ss3,a,Dips (machine ou lest leger),PDC,15,1
+2026-04-06,haut_a,ss3,a,Dips (machine ou lest leger),PDC,13,2
+2026-04-06,haut_a,ss3,a,Dips (machine ou lest leger),10,13,3
+2026-04-06,haut_a,ss4,a,Triceps poulie barre,30,15,1
+2026-04-06,haut_a,ss4,a,Triceps poulie barre,30,15,2
+2026-04-06,haut_a,ss4,a,Triceps poulie barre,30,15,3
+2026-04-06,haut_a,ss4,b,Extension overhead corde,20,15,1
+2026-04-06,haut_a,ss4,b,Extension overhead corde,PDC,12,2
+2026-04-06,haut_a,ss4,b,Extension overhead corde,20,13,3
+2026-04-06,haut_a,ss5,a,Curl incline,15,15,1
+2026-04-06,haut_a,ss5,a,Curl incline,15,15,2
+2026-04-06,haut_a,ss5,a,Curl incline,15,15,3
+2026-04-06,haut_a,ss5,b,Curl marteau corde,17.5,15,1
+2026-04-06,haut_a,ss5,b,Curl marteau corde,25,15,2
+2026-04-06,haut_a,ss5,b,Curl marteau corde,22.5,15,3
+2026-04-06,haut_a,ss6,a,Crunch machine,91,12,1
+2026-04-06,haut_a,ss6,a,Crunch machine,91,15,2
+2026-04-06,haut_a,ss6,a,Crunch machine,91,15,3
+2026-04-06,haut_a,ss6,b,Releves de jambes,12.5,14,1
+2026-04-06,haut_a,ss6,b,Releves de jambes,12.5,15,2
+2026-04-06,haut_a,ss6,b,Releves de jambes,10,15,3
+2026-04-06,haut_a,ss7,a,Face pull,20,20,1
+2026-04-06,haut_a,ss7,a,Face pull,22.5,20,2
+2026-04-06,haut_a,ss7,b,Rotations externes,10,19,1
+2026-04-06,haut_a,ss7,b,Rotations externes,10,20,2
+2026-04-07,bas,ss1,a,Hack squat ou presse,80,10,1
+2026-04-07,bas,ss1,a,Hack squat ou presse,80,10,2
+2026-04-07,bas,ss1,a,Hack squat ou presse,80,10,3
+2026-04-07,bas,ss1,a,Hack squat ou presse,80,10,4
+2026-04-07,bas,ss1,b,Leg curl assis/allonge,50,15,1
+2026-04-07,bas,ss1,b,Leg curl assis/allonge,50,15,2
+2026-04-07,bas,ss1,b,Leg curl assis/allonge,50,15,3
+2026-04-07,bas,ss1,b,Leg curl assis/allonge,50,15,4
+2026-04-07,bas,ss2,a,Romanian deadlift,40,10,1
+2026-04-07,bas,ss2,a,Romanian deadlift,60,10,2
+2026-04-07,bas,ss2,a,Romanian deadlift,70,10,3
+2026-04-07,bas,ss2,b,Abduction hanche machine,73,20,1
+2026-04-07,bas,ss2,b,Abduction hanche machine,73,20,2
+2026-04-07,bas,ss2,b,Abduction hanche machine,73,20,3
+2026-04-07,bas,ss3,a,Bulgarian split squat,12,12,1
+2026-04-07,bas,ss3,a,Bulgarian split squat,12,12,2
+2026-04-07,bas,ss3,b,Leg extension,73,15,1
+2026-04-07,bas,ss3,b,Leg extension,73,12,2
+2026-04-07,bas,ss4,a,Hip thrust machine/barre,60,15,1
+2026-04-07,bas,ss4,a,Hip thrust machine/barre,60,15,2
+2026-04-07,bas,ss4,a,Hip thrust machine/barre,60,15,3
+2026-04-07,bas,ss4,b,Back extension (glute focus),134,15,1
+2026-04-07,bas,ss4,b,Back extension (glute focus),134,15,2
+2026-04-07,bas,ss4,b,Back extension (glute focus),134,15,3
+2026-04-07,bas,ss6,a,Rollout poulie haute,27,12,1
+2026-04-07,bas,ss6,a,Rollout poulie haute,31.5,12,2
+2026-04-07,bas,ss6,a,Rollout poulie haute,31.5,12,3
+2026-04-07,bas,ss6,b,Gainage lateral,PDC,60,1
+2026-04-07,bas,ss6,b,Gainage lateral,PDC,60,2
+2026-04-07,bas,ss6,b,Gainage lateral,PDC,60,3
+2026-04-08,haut_b,ss1,a,Tractions pronation (lestees),PDC,8,1
+2026-04-08,haut_b,ss1,a,Tractions pronation (lestees),PDC,8,2
+2026-04-08,haut_b,ss1,a,Tractions pronation (lestees),PDC,8,3
+2026-04-08,haut_b,ss1,a,Tractions pronation (lestees),PDC,8,4
+2026-04-08,haut_b,ss1,b,Row poulie/machine,73,10,1
+2026-04-08,haut_b,ss1,b,Row poulie/machine,73,10,2
+2026-04-08,haut_b,ss1,b,Row poulie/machine,73,10,3
+2026-04-08,haut_b,ss1,b,Row poulie/machine,73,10,4
+2026-04-08,haut_b,ss2,a,Tirage vertical neutre/serre,73,11,1
+2026-04-08,haut_b,ss2,a,Tirage vertical neutre/serre,73,11,2
+2026-04-08,haut_b,ss2,a,Tirage vertical neutre/serre,73,11,3
+2026-04-08,haut_b,ss2,b,Row poitrine-support,54,12,1
+2026-04-08,haut_b,ss2,b,Row poitrine-support,54,12,2
+2026-04-08,haut_b,ss2,b,Row poitrine-support,54,12,3
+2026-04-08,haut_b,ss3,a,Pull-over cable,30,20,1
+2026-04-08,haut_b,ss3,a,Pull-over cable,31.5,15,2
+2026-04-08,haut_b,ss3,a,Pull-over cable,31.5,17,3
+2026-04-08,haut_b,ss3,b,Row unilateral haltere/poulie,43,15,1
+2026-04-08,haut_b,ss3,b,Row unilateral haltere/poulie,43,15,2
+2026-04-08,haut_b,ss3,b,Row unilateral haltere/poulie,43,15,3
+2026-04-08,haut_b,ss4,a,Row haut (rear delt row),18,15,1
+2026-04-08,haut_b,ss4,a,Row haut (rear delt row),18,15,2
+2026-04-08,haut_b,ss4,a,Row haut (rear delt row),18,14,3
+2026-04-08,haut_b,ss4,b,Shrug halteres/machine,18,15,1
+2026-04-08,haut_b,ss4,b,Shrug halteres/machine,18,15,2
+2026-04-08,haut_b,ss4,b,Shrug halteres/machine,18,15,3
+2026-04-08,haut_b,ss5,a,Curl barre EZ,45,12,1
+2026-04-08,haut_b,ss5,a,Curl barre EZ,45,12,2
+2026-04-08,haut_b,ss5,a,Curl barre EZ,45,12,3
+2026-04-08,haut_b,ss5,b,Curl incline,14,12,1
+2026-04-08,haut_b,ss5,b,Curl incline,14,12,2
+2026-04-08,haut_b,ss5,b,Curl incline,14,12,3
+2026-04-08,haut_b,ss6,a,Curl pupitre,27,20,1
+2026-04-08,haut_b,ss6,a,Curl pupitre,27,20,2
+2026-04-08,haut_b,ss7,a,Wrist curl haltere (paume haut),8,20,1
+2026-04-08,haut_b,ss7,a,Wrist curl haltere (paume haut),8,20,2
+2026-04-08,haut_b,ss7,b,Reverse wrist curl (paume bas),8,20,1
+2026-04-08,haut_b,ss7,b,Reverse wrist curl (paume bas),8,20,2
+2026-04-08,haut_b,ss8,a,Farmer carry leger,24,1,1
+2026-04-08,haut_b,ss8,a,Farmer carry leger,24,1,2
+2026-04-08,haut_b,ss8,b,Wall slides,PDC,15,1
+2026-04-08,haut_b,ss8,b,Wall slides,PDC,15,2

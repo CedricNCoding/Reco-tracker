@@ -52,10 +52,12 @@ export function importWeightData(data: { date: string; weight: number }[]): numb
   return imported;
 }
 
-// Parse Strong/Hevy CSV format: date, exercise, weight, reps, sets
+// Parse exercise CSV — supports two formats:
+// Legacy 4-5 cols: date,exercise,weight,reps[,set]
+// Extended 8 cols: date,session_type,superset_id,exercise_ab,exercise_name,weight,reps,set_number
 export function parseExerciseCsv(raw: string): SetLog[] {
   const lines = raw.trim().split('\n').filter((l) => l.trim());
-  if (lines.length < 2) return []; // need header + data
+  if (lines.length < 2) return [];
 
   const header = lines[0].toLowerCase();
   const hasHeader = header.includes('date') || header.includes('exercise');
@@ -64,34 +66,63 @@ export function parseExerciseCsv(raw: string): SetLog[] {
 
   for (const line of dataLines) {
     const parts = line.split(/[,;\t]/).map((s) => s.trim().replace(/"/g, ''));
-    if (parts.length < 4) continue;
 
-    let date = parts[0];
-    const ddmm = date.match(/^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$/);
-    if (ddmm) {
-      date = `${ddmm[3]}-${ddmm[2].padStart(2, '0')}-${ddmm[1].padStart(2, '0')}`;
+    // Detect format by column count
+    if (parts.length >= 8) {
+      // Extended format: date,session_type,superset_id,exercise_ab,exercise_name,weight,reps,set_number
+      let date = parts[0];
+      const ddmm = date.match(/^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$/);
+      if (ddmm) date = `${ddmm[3]}-${ddmm[2].padStart(2, '0')}-${ddmm[1].padStart(2, '0')}`;
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) continue;
+
+      const sessionType = parts[1] as SessionType;
+      const supersetId = parts[2];
+      const exerciseAb = parts[3] as 'a' | 'b';
+      const exerciseName = parts[4];
+      const weight = parts[5] === '' || parts[5] === 'PDC' ? null : parseFloat(parts[5]);
+      const reps = parseInt(parts[6]);
+      const setNum = parseInt(parts[7]) || 1;
+
+      if (!exerciseName) continue;
+
+      const id = makeSetLogId(date, sessionType, supersetId, exerciseAb, setNum);
+      logs.push({
+        id,
+        date,
+        session_type: sessionType,
+        superset_id: supersetId,
+        exercise: exerciseAb,
+        exercise_name: exerciseName,
+        set_number: setNum,
+        weight_kg: weight !== null && !isNaN(weight) ? weight : null,
+        reps_done: isNaN(reps) ? null : reps,
+      });
+    } else if (parts.length >= 4) {
+      // Legacy format: date,exercise,weight,reps[,set]
+      let date = parts[0];
+      const ddmm = date.match(/^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$/);
+      if (ddmm) date = `${ddmm[3]}-${ddmm[2].padStart(2, '0')}-${ddmm[1].padStart(2, '0')}`;
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) continue;
+
+      const exerciseName = parts[1];
+      const weight = parseFloat(parts[2]);
+      const reps = parseInt(parts[3]);
+      const setNum = parts[4] ? parseInt(parts[4]) : 1;
+
+      if (!exerciseName || isNaN(weight)) continue;
+
+      logs.push({
+        id: `import_${date}_${exerciseName}_${setNum}`,
+        date,
+        session_type: 'haut_a' as SessionType,
+        superset_id: 'import',
+        exercise: 'a',
+        exercise_name: exerciseName,
+        set_number: isNaN(setNum) ? 1 : setNum,
+        weight_kg: weight,
+        reps_done: isNaN(reps) ? null : reps,
+      });
     }
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) continue;
-
-    const exerciseName = parts[1];
-    const weight = parseFloat(parts[2]);
-    const reps = parseInt(parts[3]);
-    const setNum = parts[4] ? parseInt(parts[4]) : 1;
-
-    if (!exerciseName || isNaN(weight)) continue;
-
-    const log: SetLog = {
-      id: `import_${date}_${exerciseName}_${setNum}`,
-      date,
-      session_type: 'haut_a' as SessionType, // default
-      superset_id: 'import',
-      exercise: 'a',
-      exercise_name: exerciseName,
-      set_number: isNaN(setNum) ? 1 : setNum,
-      weight_kg: weight,
-      reps_done: isNaN(reps) ? null : reps,
-    };
-    logs.push(log);
   }
 
   return logs;
