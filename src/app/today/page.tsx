@@ -244,6 +244,7 @@ export default function TodayPage() {
         <SessionPicker
           done={entry.session_done}
           type={entry.session_type}
+          cardioType={entry.cardio_type ?? null}
           suggestedType={(activeSession?.session_type ?? schedule.session_type) as SessionType}
           onToggleDone={() =>
             update({
@@ -252,6 +253,7 @@ export default function TodayPage() {
             })
           }
           onChangeType={(t) => update({ session_type: t })}
+          onToggleCardio={(t) => update({ cardio_type: entry.cardio_type === t ? null : t })}
         />
 
         <WaterTracker value={entry.water_glasses} onChange={(v) => update({ water_glasses: v })} />
