@@ -97,15 +97,20 @@ export default function TodayPage() {
 
   function handleCardioSave(distance: number | null, duration: number | null, avgHr: number | null) {
     if (!entry) return;
-    const updated = {
+    const muscuAlreadyDone = entry.session_done && entry.session_type && !['run', 'natation', 'repos'].includes(entry.session_type);
+    const updated: DailyEntry = {
       ...entry,
-      session_done: true,
-      session_type: cardioType as SessionType,
-      session_duration_min: duration,
+      cardio_type: cardioType,
       cardio_distance_m: distance,
       cardio_duration_min: duration,
       cardio_avg_hr: avgHr,
     };
+    // Only overwrite session fields if no muscu session already recorded
+    if (!muscuAlreadyDone) {
+      updated.session_done = true;
+      updated.session_type = cardioType as SessionType;
+      updated.session_duration_min = duration;
+    }
     setEntry(updated);
     saveEntry(updated);
     syncToServer().catch(() => {});

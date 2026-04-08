@@ -89,6 +89,7 @@ export function createEmptyEntry(dateId: string): DailyEntry {
     notes: null,
     session_duration_min: null,
     water_glasses: 0,
+    cardio_type: null,
     cardio_distance_m: null,
     cardio_duration_min: null,
     cardio_avg_hr: null,

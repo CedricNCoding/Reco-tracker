@@ -67,11 +67,11 @@ export function generateBilanMarkdown(data: BilanData): string {
     return `${dayLabel} [${label} ${symbol}]`;
   }).join(' ');
 
-  // Natation & run
-  const merEntry = getDayEntryForWeek(entries, 'mercredi', weekStart);
-  const dimEntry = getDayEntryForWeek(entries, 'dimanche', weekStart);
-  const natation = merEntry?.session_done && merEntry?.session_type === 'haut_b' ? '✅' : '❌';
-  const run = dimEntry?.session_done && dimEntry?.session_type === 'run' ? '✅' : '❌';
+  // Natation & run — check cardio_type or session_type
+  const natationDone = entries.some((e) => e.cardio_type === 'natation' || e.session_type === 'natation');
+  const runDone = entries.some((e) => e.cardio_type === 'run' || e.session_type === 'run');
+  const natation = natationDone ? '✅' : '❌';
+  const run = runDone ? '✅' : '❌';
 
   // Protein sub-days
   const proteinSubDays = entries
@@ -204,7 +204,7 @@ function formatMuscuResults(setLogs: SetLog[], entries: DailyEntry[]): string {
 
 function formatCardioResults(entries: DailyEntry[]): string {
   const cardioEntries = entries.filter(
-    (e) => e.session_done && (e.session_type === 'run' || e.session_type === 'natation')
+    (e) => e.cardio_type || (e.session_done && (e.session_type === 'run' || e.session_type === 'natation'))
   );
 
   if (cardioEntries.length === 0) return '';
@@ -213,7 +213,8 @@ function formatCardioResults(entries: DailyEntry[]): string {
 
   for (const entry of cardioEntries) {
     const dayName = format(parseISO(entry.id), 'EEEE', { locale: fr });
-    const label = entry.session_type === 'run' ? 'Course' : 'Natation';
+    const type = entry.cardio_type || entry.session_type;
+    const label = type === 'run' ? 'Course' : 'Natation';
     const parts: string[] = [`**${dayName} — ${label}**`];
 
     const details: string[] = [];

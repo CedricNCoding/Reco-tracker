@@ -23,6 +23,7 @@ export interface DailyEntry {
   session_duration_min: number | null;
   water_glasses: number; // 0-5, each = 500ml
   // Cardio stats (run / natation)
+  cardio_type: 'run' | 'natation' | null;
   cardio_distance_m: number | null; // meters
   cardio_duration_min: number | null;
   cardio_avg_hr: number | null; // average heart rate

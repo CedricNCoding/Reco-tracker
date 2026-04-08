@@ -175,6 +175,8 @@ export default function ReviewPage() {
                 const isRest = day.session_type === 'repos';
                 const typeLabel = entry?.session_type ? SESSION_TYPE_LABELS[entry.session_type] : day.label.split('—')[0].trim();
                 const duration = entry?.session_duration_min;
+                const hasCardio = entry?.cardio_type !== null && entry?.cardio_type !== undefined;
+                const cardioLabel = entry?.cardio_type === 'natation' ? '🏊' : entry?.cardio_type === 'run' ? '🏃' : '';
 
                 return (
                   <div
@@ -189,6 +191,7 @@ export default function ReviewPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-text-secondary">{isRest ? 'Repos' : typeLabel}</span>
+                      {hasCardio && <span className="text-sm">{cardioLabel}</span>}
                       {duration && <span className="text-[10px] text-text-secondary/60">{duration} min</span>}
                     </div>
                   </div>
