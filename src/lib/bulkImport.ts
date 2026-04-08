@@ -130,9 +130,30 @@ export function parseExerciseCsv(raw: string): SetLog[] {
 
 export function importExerciseData(logs: SetLog[]): number {
   let imported = 0;
+
+  // Group logs by date to also update DailyEntries
+  const byDate = new Map<string, SetLog[]>();
   for (const log of logs) {
     saveSetLog(log);
     imported++;
+    if (!byDate.has(log.date)) byDate.set(log.date, []);
+    byDate.get(log.date)!.push(log);
   }
+
+  // Mark each date's DailyEntry as session_done with the correct session_type
+  for (const [date, dateLogs] of byDate) {
+    const existing = getEntry(date);
+    const entry = existing ?? createEmptyEntry(date);
+    // Use the first log's session_type (all logs for a date should share the same type)
+    const sessionType = dateLogs[0].session_type;
+    const isMuscu = !['run', 'natation', 'repos'].includes(sessionType);
+
+    if (isMuscu && !entry.session_done) {
+      entry.session_done = true;
+      entry.session_type = sessionType;
+    }
+    saveEntry(entry);
+  }
+
   return imported;
 }
