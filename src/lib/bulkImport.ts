@@ -148,7 +148,11 @@ export function importExerciseData(logs: SetLog[]): number {
     const sessionType = dateLogs[0].session_type;
     const isMuscu = !['run', 'natation', 'repos'].includes(sessionType);
 
-    if (isMuscu && !entry.session_done) {
+    if (isMuscu) {
+      // If entry had cardio as session_type, move it to cardio_type and set muscu
+      if (entry.session_done && entry.session_type && ['run', 'natation'].includes(entry.session_type)) {
+        entry.cardio_type = entry.session_type as 'run' | 'natation';
+      }
       entry.session_done = true;
       entry.session_type = sessionType;
     }
