@@ -62,7 +62,19 @@ export default function TodayPage() {
 
   function handleSave() {
     if (!entry) return;
-    saveEntry(entry);
+    // Merge with latest storage to avoid overwriting external changes (e.g. from import)
+    const stored = getEntry(todayId);
+    const merged = stored ? { ...stored, ...entry } : entry;
+    // Preserve session_done/session_type if they were set externally and entry hasn't changed them
+    if (stored?.session_done && !entry.session_done) {
+      merged.session_done = stored.session_done;
+      merged.session_type = stored.session_type;
+    }
+    if (stored?.cardio_type && !entry.cardio_type) {
+      merged.cardio_type = stored.cardio_type;
+    }
+    setEntry(merged);
+    saveEntry(merged);
     setSaved(true);
     syncToServer().catch(() => {});
     setTimeout(() => setSaved(false), 2000);
