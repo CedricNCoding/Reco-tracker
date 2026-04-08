@@ -18,7 +18,7 @@ export default function SessionList({ entries, onDelete }: SessionListProps) {
   const [expanded, setExpanded] = useState(true);
 
   const sessions = entries
-    .filter((e) => e.session_done && e.session_type)
+    .filter((e) => (e.session_done && e.session_type) || e.cardio_type)
     .sort((a, b) => b.id.localeCompare(a.id));
 
   if (sessions.length === 0) return null;
@@ -58,7 +58,9 @@ export default function SessionList({ entries, onDelete }: SessionListProps) {
       {expanded && (
         <div className="mt-3 space-y-1.5">
           {sessions.map((entry) => {
-            const typeLabel = entry.session_type ? SESSION_TYPE_LABELS[entry.session_type] : '?';
+            const muscuLabel = entry.session_done && entry.session_type ? SESSION_TYPE_LABELS[entry.session_type] : null;
+            const cardioLabel = entry.cardio_type === 'natation' ? '🏊 Natation' : entry.cardio_type === 'run' ? '🏃 Run' : null;
+            const typeLabel = [muscuLabel, cardioLabel].filter(Boolean).join(' + ') || '?';
             const dateLabel = format(parseISO(entry.id), 'EEE d MMM', { locale: fr });
 
             return (
